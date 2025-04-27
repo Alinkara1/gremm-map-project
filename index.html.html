@@ -8,7 +8,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: transparent;
+      background: #000;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,7 +19,7 @@
       height: 330px;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
   </style>
 </head>
@@ -40,16 +40,17 @@
 
         myMap.behaviors.disable('scrollZoom');
 
-        // Стилизация карты через фильтр (НЕ убираем метки метро)
+        // Фильтр для темной карты
         myMap.container.getElement().querySelector('ymaps').style.filter = `
-          grayscale(0.2) 
-          brightness(1.1) 
-          sepia(0.4) 
-          saturate(1.6) 
-          hue-rotate(160deg) 
+          grayscale(0.7)
+          brightness(0.8)
           contrast(1.2)
+          sepia(0.2)
+          hue-rotate(170deg)
+          saturate(2)
         `;
 
+        // Метка GREMM
         const placemark = new ymaps.Placemark(
           [55.597462, 37.601317],
           {
@@ -57,7 +58,7 @@
             balloonContent: "<strong>GREMM</strong><br>Развлекательный центр<br>Варшавское ш., 150Б, Москва"
           },
           {
-            preset: "islands#yellowDotIconWithCaption",
+            preset: "islands#darkGreenDotIconWithCaption",
             iconCaption: "GREMM"
           }
         );
@@ -68,5 +69,6 @@
   </script>
 </body>
 </html>
+
 
 

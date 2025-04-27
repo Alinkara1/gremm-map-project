@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>GREMM Карта</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #map {
+      width: 241px;
+      height: 330px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <script src="https://api-maps.yandex.ru/2.1/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
+
+  <script>
+    window.onload = function() {
+      ymaps.ready(function () {
+        const myMap = new ymaps.Map("map", {
+          center: [55.597462, 37.601317],
+          zoom: 16,
+          controls: []
+        });
+
+        myMap.behaviors.disable('scrollZoom');
+
+        // Стилизация карты через фильтр (НЕ убираем метки метро)
+        myMap.container.getElement().querySelector('ymaps').style.filter = `
+          grayscale(0.2) 
+          brightness(1.1) 
+          sepia(0.4) 
+          saturate(1.6) 
+          hue-rotate(160deg) 
+          contrast(1.2)
+        `;
+
+        const placemark = new ymaps.Placemark(
+          [55.597462, 37.601317],
+          {
+            hintContent: "GREMM",
+            balloonContent: "<strong>GREMM</strong><br>Развлекательный центр<br>Варшавское ш., 150Б, Москва"
+          },
+          {
+            preset: "islands#yellowDotIconWithCaption",
+            iconCaption: "GREMM"
+          }
+        );
+
+        myMap.geoObjects.add(placemark);
+      });
+    };
+  </script>
+</body>
+</html>
+
+

@@ -10,8 +10,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background: #000; /* Можно задать фон для красоты */
+            background: #000; /* Черный фон страницы */
         }
         #map {
             width: 100%;
@@ -19,34 +18,14 @@
             border-radius: 16px;
             overflow: hidden;
         }
-        .marker-class {
-            position: relative;
-            display: inline-block;
-            transform: translate(-50%, -50%);
-        }
-        .marker-class img {
+        .marker {
             width: 24px;
-        }
-        .tooltip-content {
-            visibility: hidden;
-            width: max-content;
-            background-color: #008180;
-            color: white;
-            text-align: center;
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-family: 'Graphik', Arial, sans-serif;
-            position: absolute;
-            bottom: 120%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .marker-class:hover .tooltip-content {
-            visibility: visible;
-            opacity: 1;
+            height: 24px;
+            background: #008180;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -54,84 +33,63 @@
     <div id="map"></div>
 
     <script>
-    const marks = {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "id": 0,
-          "geometry": {
-            "type": "Point",
-            "coordinates": [37.601367, 55.597541]
-          },
-          "properties": {
-            "description": "Москва, Варшавское шоссе, 150Б",
-            "marker-color": "#1e98ff"
-          }
-        }
-      ]
-    };
+        async function initMap() {
+            await ymaps3.ready;
+            const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
 
-    async function main() {
-        await ymaps3.ready;
-        const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
-
-        const myMap = new YMap(document.getElementById('map'), {
-            location: {
-                center: [37.601367, 55.597541],
-                zoom: 16
-            },
-            behaviors: ['drag']
-        });
-
-        myMap.addChild(new YMapDefaultFeaturesLayer());
-        myMap.addChild(new YMapDefaultSchemeLayer({
-            customization: [
-                {
-                    tags: {any: ["road"]},
-                    elements: "geometry",
-                    stylers: [{ color: "797979" }]
-                },
-                {
-                    tags: {any: ["transit"]},
-                    stylers: { visibility: "off" }
-                },
-                {
-                    tags: {any: ["water"]},
-                    elements: "geometry",
-                    stylers: [{ color: "359390" }]
-                },
-                {
-                    tags: {any: ["landscape", "admin", "land", "transit"]},
-                    elements: "geometry",
-                    stylers: [{ color: "f8c063" }]
-                },
-                {
-                    tags: {any: ["building"]},
-                    elements: "geometry",
-                    stylers: [{ color: "b18233" }]
+            const map = new YMap(document.getElementById('map'), {
+                location: {
+                    center: [37.601367, 55.597541], // GREMM координаты
+                    zoom: 16,
                 }
-            ]
-        }));
+            });
 
-        marks.features.forEach(feature => {
+            map.addChild(new YMapDefaultFeaturesLayer());
+
+            map.addChild(new YMapDefaultSchemeLayer({
+                customization: [
+                    {
+                        tags: {any: ["road"]},
+                        elements: "geometry",
+                        stylers: [{ color: "797979" }]
+                    },
+                    {
+                        tags: {any: ["transit"]},
+                        stylers: { visibility: "off" }
+                    },
+                    {
+                        tags: {any: ["water"]},
+                        elements: "geometry",
+                        stylers: [{ color: "#359390" }]
+                    },
+                    {
+                        tags: {any: ["landscape", "admin", "land", "transit"]},
+                        elements: "geometry",
+                        stylers: [{ color: "#f8c063" }]
+                    },
+                    {
+                        tags: {any: ["building"]},
+                        elements: "geometry",
+                        stylers: [{ color: "#b18233" }]
+                    }
+                ]
+            }));
+
             const markerElement = document.createElement('div');
-            markerElement.className = 'marker-class';
-            markerElement.innerHTML = `
-                <img src="https://yastatic.net/s3/marker/_/marker_default.svg" alt="Метка">
-                <div class="tooltip-content">${feature.properties.description}</div>
-            `;
-            const marker = new YMapMarker({
-                coordinates: feature.geometry.coordinates
-            }, markerElement);
-            myMap.addChild(marker);
-        });
-    }
+            markerElement.className = 'marker';
 
-    main();
+            const marker = new YMapMarker({
+                coordinates: [37.601367, 55.597541]
+            }, markerElement);
+
+            map.addChild(marker);
+        }
+
+        initMap();
     </script>
 </body>
 </html>
+
 
 
 

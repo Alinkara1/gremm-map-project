@@ -1,25 +1,34 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GREMM Карта</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта GREMM</title>
+  
+  <!-- ПРАВИЛЬНОЕ подключение Яндекс.Карт V3 -->
+  <script src="https://api-maps.yandex.ru/v3/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
+  
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      background: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      height: 100%;
+      width: 100%;
+      background: #000; /* Чёрный фон */
     }
     #map {
-      width: 241px;
-      height: 330px;
-      border-radius: 12px;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .marker {
+      width: 24px;
+      height: 24px;
+      background: #008180; /* Бирюзовая метка */
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
@@ -27,46 +36,62 @@
 <body>
   <div id="map"></div>
 
-  <script src="https://api-maps.yandex.ru/2.1/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
-
   <script>
-    window.onload = function() {
-      ymaps.ready(function () {
-        const myMap = new ymaps.Map("map", {
-          center: [55.597462, 37.601317],
+    ymaps3.ready.then(async () => {
+      const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker } = ymaps3;
+
+      const map = new YMap(document.getElementById('map'), {
+        location: {
+          center: [37.601367, 55.597541], // Координаты GREMM
           zoom: 16,
-          controls: []
-        });
+        }
+      });
 
-        myMap.behaviors.disable('scrollZoom');
+      // ОБЯЗАТЕЛЬНО: добавляем слои для отображения карты
+      map.addChild(new YMapDefaultFeaturesLayer());
 
-        // Стилизация карты через фильтр (НЕ убираем метки метро)
-        myMap.container.getElement().querySelector('ymaps').style.filter = `
-          grayscale(0.2) 
-          brightness(1.1) 
-          sepia(0.4) 
-          saturate(1.6) 
-          hue-rotate(160deg) 
-          contrast(1.2)
-        `;
-
-        const placemark = new ymaps.Placemark(
-          [55.597462, 37.601317],
+      map.addChild(new YMapDefaultSchemeLayer({
+        customization: [
           {
-            hintContent: "GREMM",
-            balloonContent: "<strong>GREMM</strong><br>Развлекательный центр<br>Варшавское ш., 150Б, Москва"
+            tags: { any: ["road"] },
+            elements: "geometry",
+            stylers: [{ color: "#797979" }] // Серые дороги
           },
           {
-            preset: "islands#yellowDotIconWithCaption",
-            iconCaption: "GREMM"
+            tags: { any: ["transit"] },
+            stylers: { visibility: "off" } // Убираем транспорт
+          },
+          {
+            tags: { any: ["water"] },
+            elements: "geometry",
+            stylers: [{ color: "#359390" }] // Бирюзовая вода
+          },
+          {
+            tags: { any: ["landscape", "admin", "land", "transit"] },
+            elements: "geometry",
+            stylers: [{ color: "#f8c063" }] // Песочная земля
+          },
+          {
+            tags: { any: ["building"] },
+            elements: "geometry",
+            stylers: [{ color: "#b18233" }] // Цвет зданий
           }
-        );
+        ]
+      }));
 
-        myMap.geoObjects.add(placemark);
-      });
-    };
+      // Создание кастомной бирюзовой метки GREMM
+      const markerElement = document.createElement('div');
+      markerElement.className = 'marker';
+
+      const marker = new YMapMarker({
+        coordinates: [37.601367, 55.597541]
+      }, markerElement);
+
+      map.addChild(marker);
+    });
   </script>
 </body>
 </html>
+
 
 

@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Карта GREMM</title>
-  <script src="https://api-maps.yandex.ru/v3/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU"></script>
+  
+  <!-- Подключение правильного API Яндекс.Карт V3 -->
+  <script src="https://api-maps.yandex.ru/v3/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
+  
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
       height: 100%;
-      background: #000;
+      width: 100%;
+      background: #000; /* Чёрный фон страницы */
     }
     #map {
       width: 100%;
@@ -37,14 +40,15 @@
     ymaps3.ready.then(async () => {
       const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker } = ymaps3;
 
+      // Создание карты
       const map = new YMap(document.getElementById('map'), {
         location: {
-          center: [37.601367, 55.597541], // Координаты GREMM
+          center: [37.601367, 55.597541], // GREMM
           zoom: 16,
         }
       });
 
-      // ОБЯЗАТЕЛЬНО: добавляем слои
+      // ОБЯЗАТЕЛЬНО добавляем слои карты
       map.addChild(new YMapDefaultFeaturesLayer());
 
       map.addChild(new YMapDefaultSchemeLayer({
@@ -61,22 +65,22 @@
           {
             tags: { any: ["water"] },
             elements: "geometry",
-            stylers: [{ color: "#359390" }]
+            stylers: [{ color: "#359390" }] /* бирюзовая вода */
           },
           {
             tags: { any: ["landscape", "admin", "land", "transit"] },
             elements: "geometry",
-            stylers: [{ color: "#f8c063" }]
+            stylers: [{ color: "#f8c063" }] /* песочная земля */
           },
           {
             tags: { any: ["building"] },
             elements: "geometry",
-            stylers: [{ color: "#b18233" }]
+            stylers: [{ color: "#b18233" }] /* цвет зданий */
           }
         ]
       }));
 
-      // Добавляем кастомную метку GREMM
+      // Кастомная метка GREMM
       const markerElement = document.createElement('div');
       markerElement.className = 'marker';
 
@@ -89,4 +93,5 @@
   </script>
 </body>
 </html>
+
 

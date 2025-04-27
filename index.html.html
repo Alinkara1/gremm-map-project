@@ -1,73 +1,137 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>GREMM Карта</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    #map {
-      width: 241px;
-      height: 330px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Карта GREMM</title>
+    <script src="https://api-maps.yandex.ru/v3/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000; /* Можно задать фон для красоты */
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .marker-class {
+            position: relative;
+            display: inline-block;
+            transform: translate(-50%, -50%);
+        }
+        .marker-class img {
+            width: 24px;
+        }
+        .tooltip-content {
+            visibility: hidden;
+            width: max-content;
+            background-color: #008180;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-family: 'Graphik', Arial, sans-serif;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .marker-class:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
-
 <body>
-  <div id="map"></div>
+    <div id="map"></div>
 
-  <script src="https://api-maps.yandex.ru/2.1/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU"></script>
+    <script>
+    const marks = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "id": 0,
+          "geometry": {
+            "type": "Point",
+            "coordinates": [37.601367, 55.597541]
+          },
+          "properties": {
+            "description": "Москва, Варшавское шоссе, 150Б",
+            "marker-color": "#1e98ff"
+          }
+        }
+      ]
+    };
 
-  <script>
-    window.onload = function() {
-      ymaps.ready(function () {
-        const myMap = new ymaps.Map("map", {
-          center: [55.597541, 37.601367], // Точка GREMM
-          zoom: 16,
-          controls: []
+    async function main() {
+        await ymaps3.ready;
+        const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
+
+        const myMap = new YMap(document.getElementById('map'), {
+            location: {
+                center: [37.601367, 55.597541],
+                zoom: 16
+            },
+            behaviors: ['drag']
         });
 
-        myMap.behaviors.disable('scrollZoom');
+        myMap.addChild(new YMapDefaultFeaturesLayer());
+        myMap.addChild(new YMapDefaultSchemeLayer({
+            customization: [
+                {
+                    tags: {any: ["road"]},
+                    elements: "geometry",
+                    stylers: [{ color: "797979" }]
+                },
+                {
+                    tags: {any: ["transit"]},
+                    stylers: { visibility: "off" }
+                },
+                {
+                    tags: {any: ["water"]},
+                    elements: "geometry",
+                    stylers: [{ color: "359390" }]
+                },
+                {
+                    tags: {any: ["landscape", "admin", "land", "transit"]},
+                    elements: "geometry",
+                    stylers: [{ color: "f8c063" }]
+                },
+                {
+                    tags: {any: ["building"]},
+                    elements: "geometry",
+                    stylers: [{ color: "b18233" }]
+                }
+            ]
+        }));
 
-        // Загружаем стили карты (сохраняем файл customization.json на своем сервере)
-        fetch('customization.json')
-          .then(response => response.json())
-          .then(styles => {
-            myMap.setType('yandex#map');
-            myMap.options.set('yandexMapAutoSwitch', false);
-            myMap.options.set('mapAutoSwitch', false);
-            myMap.set('styles', styles);
-          });
+        marks.features.forEach(feature => {
+            const markerElement = document.createElement('div');
+            markerElement.className = 'marker-class';
+            markerElement.innerHTML = `
+                <img src="https://yastatic.net/s3/marker/_/marker_default.svg" alt="Метка">
+                <div class="tooltip-content">${feature.properties.description}</div>
+            `;
+            const marker = new YMapMarker({
+                coordinates: feature.geometry.coordinates
+            }, markerElement);
+            myMap.addChild(marker);
+        });
+    }
 
-        // Метка GREMM
-        const placemark = new ymaps.Placemark(
-          [55.597541, 37.601367],
-          {
-            hintContent: "GREMM",
-            balloonContent: "Москва, Варшавское шоссе, 150Б"
-          },
-          {
-            preset: 'islands#blueCircleDotIconWithCaption',
-            iconCaption: 'GREMM'
-          }
-        );
-
-        myMap.geoObjects.add(placemark);
-      });
-    };
-  </script>
+    main();
+    </script>
 </body>
 </html>
+
 
 

@@ -1,19 +1,16 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Карта GREMM</title>
-  
-  <!-- ПРАВИЛЬНОЕ подключение Яндекс.Карт V3 -->
   <script src="https://api-maps.yandex.ru/v3/?apikey=01eba14f-630c-49ea-862d-2ad5dd05b0fe&lang=ru_RU" type="text/javascript"></script>
-  
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
-      background: #000; /* Чёрный фон */
+      background: #000;
     }
     #map {
       width: 100%;
@@ -24,7 +21,7 @@
     .marker {
       width: 24px;
       height: 24px;
-      background: #008180; /* Бирюзовая метка */
+      background: #008180;
       border-radius: 50%;
       border: 3px solid white;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
@@ -32,54 +29,49 @@
     }
   </style>
 </head>
-
 <body>
   <div id="map"></div>
-
   <script>
     ymaps3.ready.then(async () => {
       const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker } = ymaps3;
 
       const map = new YMap(document.getElementById('map'), {
         location: {
-          center: [37.601367, 55.597541], // Координаты GREMM
+          center: [37.601367, 55.597541],
           zoom: 16,
         }
       });
 
-      // ОБЯЗАТЕЛЬНО: добавляем слои для отображения карты
       map.addChild(new YMapDefaultFeaturesLayer());
-
       map.addChild(new YMapDefaultSchemeLayer({
         customization: [
           {
             tags: { any: ["road"] },
             elements: "geometry",
-            stylers: [{ color: "#797979" }] // Серые дороги
+            stylers: [{ color: "#797979" }]
           },
           {
             tags: { any: ["transit"] },
-            stylers: { visibility: "off" } // Убираем транспорт
+            stylers: { visibility: "off" }
           },
           {
             tags: { any: ["water"] },
             elements: "geometry",
-            stylers: [{ color: "#359390" }] // Бирюзовая вода
+            stylers: [{ color: "#359390" }]
           },
           {
             tags: { any: ["landscape", "admin", "land", "transit"] },
             elements: "geometry",
-            stylers: [{ color: "#f8c063" }] // Песочная земля
+            stylers: [{ color: "#f8c063" }]
           },
           {
             tags: { any: ["building"] },
             elements: "geometry",
-            stylers: [{ color: "#b18233" }] // Цвет зданий
+            stylers: [{ color: "#b18233" }]
           }
         ]
       }));
 
-      // Создание кастомной бирюзовой метки GREMM
       const markerElement = document.createElement('div');
       markerElement.className = 'marker';
 
